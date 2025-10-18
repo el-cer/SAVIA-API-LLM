@@ -1,0 +1,21 @@
+phrase,groupe,type
+Le voyant rouge de ma Freebox clignote,0,Technique
+"Plus de connexion sur ma Freebox, panne totale",0,Technique
+Le voyant clignote rouge et plus d'accès Internet,0,Technique
+Ma box redémarre toute seule sans arrêt,0,Technique
+Impossible d'accéder à Netflix via la Freebox,0,Technique
+Mon téléphone fixe ne reçoit plus d'appel,0,Technique
+Le débit est très lent depuis 3 jours,1,Technique
+Je souhaite changer mon mot de passe Wi-Fi,2,Technique
+Comment activer le contrôle parental sur la box ?,3,Technique
+Le décodeur TV affiche erreur E10,4,Technique
+La télécommande ne fonctionne plus,5,Technique
+j'aime manger,6,Générique
+je vais à la piscine tous les samedis,7,Générique
+le ciel est bleu aujourd'hui,8,Générique
+Free propose une offre à 5 euros par mois,9,Générique
+Ma commande Amazon n’a pas été livrée,10,Générique
+Ma voiture fait un bruit bizarre,11,Générique
+Mon frigo est en panne,12,Technique
+Je voudrais un remboursement,13,Générique
+"Je déménage bientôt, comment transférer mon abonnement Free ?",14,Générique

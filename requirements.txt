@@ -1,0 +1,43 @@
+# ---------------------------------------
+# 🧠 Core API & serving
+# ---------------------------------------
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+prometheus_client>=0.21.0
+
+# ---------------------------------------
+# 🤖 LLM & Transformers (si usage Transformers)
+# ---------------------------------------
+transformers>=4.44.2
+torch>=2.3.0
+accelerate>=0.32.0
+bitsandbytes>=0.43.1
+sentencepiece>=0.1.99
+
+# ---------------------------------------
+# 🦙 LLaMA.cpp - CUDA 12.2 + AVX2 (Windows + Python 3.10)
+# wheel local : llama_cpp_python (cuBLAS optimisé)
+# ---------------------------------------
+file:///C:/Users/Eliot/Desktop/projet_rncp/SAVIA-API-LLM/wheel/llama_cpp_python-0.2.26+cu122-cp310-cp310-win_amd64.whl
+# ---------------------------------------
+# 🔎 Embeddings + ML
+# ---------------------------------------
+sentence-transformers>=3.0.0
+scikit-learn>=1.5.1
+nltk>=3.9.1
+hdbscan>=0.8.40   # ✅ ajout pour clustering contextuel HDBSCAN
+
+# ---------------------------------------
+# 🧮 Data & I/O
+# ---------------------------------------
+pandas>=2.2.3
+pyarrow>=17.0.0
+fastparquet>=2024.5.0
+
+# ---------------------------------------
+# 🧬 Serialization
+# ---------------------------------------
+protobuf>=4.25.3,<5.0.0
+joblib>=1.4.2
+
+mistralai
