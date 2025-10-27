@@ -14,14 +14,12 @@ from app.llm_utils import (
     classify_text,
 )
 from app.embedding_utils import embed_text
-from prometheus.metrics import REQUEST_COUNT, LATENCY, setup_metrics
 
 # ============================================================
-# 🔧 INIT
+#  INIT
 # ============================================================
 
 app = FastAPI()
-setup_metrics(app)
 
 # Autoriser ton frontend Next.js
 app.add_middleware(
@@ -51,7 +49,7 @@ DEFAULT_CONTEXT = (
 )
 
 # ============================================================
-# 🔹 Schémas de requêtes
+#  Schémas de requêtes
 # ============================================================
 
 class PromptRequest(BaseModel):
@@ -64,7 +62,7 @@ class ClassifyRequest(BaseModel):
     prompt: str
 
 # ============================================================
-# 🔹 Chat principal
+#  Chat principal
 # ============================================================
 
 @app.post("/chat_sav")
@@ -85,8 +83,6 @@ def chat_sav(req: PromptRequest):
         )
 
         stream = generate_response_stream(model, full_prompt, req.max_tokens)
-        LATENCY.observe(time.time() - start)
-        REQUEST_COUNT.inc()
         return StreamingResponse(stream, media_type="text/plain")
 
     # ☁️ Cas 2 — API Mistral
@@ -101,7 +97,7 @@ def chat_sav(req: PromptRequest):
     return {"response": "❌ Modèle non reconnu."}
 
 # ============================================================
-# 🔹 Classification
+# Classification
 # ============================================================
 
 @app.post("/classify")
