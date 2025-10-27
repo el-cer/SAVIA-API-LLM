@@ -48,6 +48,23 @@ DEFAULT_CONTEXT = (
     "Réponds en français, sans politesse inutile, en étapes numérotées claires et concises."
 )
 
+default_classifications = ["problème avéré", "problème non avéré"]
+domaines = ["mobile", "fixe", "facture"]
+sous_domaines = ["réseau", "wifi", "box","appel voix","sécurité"]
+                 
+
+CLASSIFICATION_CONTEXT = (
+    "Tu es un assistant SAV Free. "
+    "Ton rôle est de classifier un tweet en fonction de son contenu. "
+    "Tu dois retourner un JSON sous la forme : "
+    "{'label': label, 'domaine': domaine, 'sous_domaine': sous_domaine, 'text': prompt}. "
+    f"Voici les possibilités pour 'label' (classification binaire) : {default_classification}. "
+    f"Voici les possibilités pour 'domaine' : {domaine}. "
+    f"Voici les possibilités pour 'sous_domaine' : {sous_domaine}. "
+    "Analyse bien le texte et choisis la catégorie la plus pertinente."
+)
+
+
 # ============================================================
 #  Schémas de requêtes
 # ============================================================
@@ -60,6 +77,8 @@ class PromptRequest(BaseModel):
 
 class ClassifyRequest(BaseModel):
     prompt: str
+    model: str
+    context: str
 
 # ============================================================
 #  Chat principal
@@ -100,10 +119,19 @@ def chat_sav(req: PromptRequest):
 # Classification
 # ============================================================
 
+
 @app.post("/classify")
 def classify(req: ClassifyRequest):
-    label, score = classify_text(req.prompt, df_gold)
-    return {"label": label, "score": score}
+    label, domaine, sous_domaine = classify_text(
+        req.prompt,
+        req.model,
+        default_classification,
+        domaines,
+        sous_domaines,
+        req.context.strip() or CLASSIFICATION_CONTEXT
+    )
+    return {"label": label, "domaine": domaine, "sous_domaine": sous_domaine, "text": req.prompt}
+
 
 @app.get("/health")
 def health_check():
