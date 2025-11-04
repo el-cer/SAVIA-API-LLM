@@ -5,7 +5,8 @@ from pydantic import BaseModel
 import time
 import pandas as pd
 import os
-
+import json
+import re
 from app.model_loader import load_model
 from app.llm_utils import (
     generate_response_stream,
@@ -24,7 +25,7 @@ app = FastAPI()
 # Autoriser ton frontend Next.js
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://192.168.1.144:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -55,13 +56,20 @@ sous_domaines = ["réseau", "wifi", "box","appel voix","sécurité"]
 
 CLASSIFICATION_CONTEXT = (
     "Tu es un assistant SAV Free. "
-    "Ton rôle est de classifier un tweet en fonction de son contenu. "
-    "Tu dois retourner un JSON sous la forme : "
+    "Ton rôle est de classifier un tweet ou message client selon son contenu. "
+    "Tu dois renvoyer un JSON **valide** au format suivant : "
     "{'label': label, 'domaine': domaine, 'sous_domaine': sous_domaine, 'text': prompt}. "
-    f"Voici les possibilités pour 'label' (classification binaire) : {default_classification}. "
-    f"Voici les possibilités pour 'domaine' : {domaine}. "
-    f"Voici les possibilités pour 'sous_domaine' : {sous_domaine}. "
-    "Analyse bien le texte et choisis la catégorie la plus pertinente."
+
+    "Critères :\n"
+    "- Si le message décrit un dysfonctionnement, une coupure, un bug, une lenteur, ou une plainte explicite → 'label': 'problème avéré'.\n"
+    "- Si le message contient un remerciement, un avis positif, une opinion générale, ou ne signale **aucun problème** → 'label': 'problème non avéré'.\n\n"
+
+    "Si 'label' = 'problème non avéré', mets 'domaine': 'aucun' et 'sous_domaine': 'aucun'.\n\n"
+
+    f"Voici les domaines possibles : {domaines}. "
+    f"Voici les sous-domaines possibles : {sous_domaines}. "
+    "Analyse attentivement le ton et le contenu du message avant de répondre. "
+    "Ta réponse doit uniquement contenir le JSON, sans texte avant ou après."
 )
 
 
@@ -122,16 +130,66 @@ def chat_sav(req: PromptRequest):
 
 @app.post("/classify")
 def classify(req: ClassifyRequest):
-    label, domaine, sous_domaine = classify_text(
-        req.prompt,
-        req.model,
-        default_classification,
-        domaines,
-        sous_domaines,
-        req.context.strip() or CLASSIFICATION_CONTEXT
-    )
-    return {"label": label, "domaine": domaine, "sous_domaine": sous_domaine, "text": req.prompt}
+    """
+    Classification via LLM avec contexte CLASSIFICATION_CONTEXT.
+    Attend un JSON valide (ou pseudo-JSON avec apostrophes).
+    """
+    context = req.context.strip() or CLASSIFICATION_CONTEXT
+    full_text = ""
 
+    # 🔹 Modèle local (Llama.cpp)
+    if req.model == "Mistral-7B-Instruct":
+        full_prompt = f"{context}\n\nTexte à analyser : {req.prompt}"
+        stream = generate_response_stream(model, full_prompt, max_tokens=256)
+        full_text = "".join(stream)
+
+    # 🔹 Modèle cloud (Mistral API)
+    elif req.model == "Mistral-medium":
+        for word in request_model_api(
+            prompt=req.prompt,
+            context=context,
+            model_name="mistral-medium-latest",
+        )():
+            full_text += word
+
+    else:
+        return {"error": "Modèle non reconnu."}
+
+    print(full_text)  # pour debug
+
+    # --- Parsing robuste du JSON ---
+    try:
+        json_match = re.search(r"\{.*\}", full_text, re.DOTALL)
+        if not json_match:
+            raise ValueError("JSON non détecté dans la réponse")
+
+        json_str = json_match.group(0)
+        json_str = json_str.replace("'", '"')
+        json_str = (
+            json_str.replace("None", "null")
+            .replace("True", "true")
+            .replace("False", "false")
+        )
+
+        data = json.loads(json_str)
+
+    except Exception as e:
+        data = {"error": f"Impossible de parser la réponse : {e}", "raw_response": full_text}
+
+    # --- Ajout du texte original ---
+    data["text"] = req.prompt
+
+    # --- Normalisation si problème non avéré ---
+    if data.get("label", "").lower() == "problème non avéré":
+        data["domaine"] = "aucun"
+        data["sous_domaine"] = "aucun"
+
+    # --- Valeurs par défaut si champs manquants ---
+    data.setdefault("label", "inconnu")
+    data.setdefault("domaine", "inconnu")
+    data.setdefault("sous_domaine", "inconnu")
+
+    return data
 
 @app.get("/health")
 def health_check():

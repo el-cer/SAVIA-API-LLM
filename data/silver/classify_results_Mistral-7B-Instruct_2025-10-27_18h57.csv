@@ -1,0 +1,19 @@
+id,prompt,label,domaine,sous_domaine,model,status_code,duration_sec
+1,"Ma box clignote rouge depuis hier, plus d’internet",problème avéré,fixe,box,Mistral-7B-Instruct,200,2.25
+2,Impossible de passer un appel depuis mon mobile Free,problème avéré,mobile,appel voix,Mistral-7B-Instruct,200,2.45
+3,"Le Wi-Fi saute toutes les 10 minutes, c’est insupportable",problème avéré,wifi,réseau,Mistral-7B-Instruct,200,1.88
+4,Ma facture a doublé ce mois-ci sans raison,problème avéré,facture,réseau,Mistral-7B-Instruct,200,2.64
+5,"Mon débit est lent depuis deux jours, ça rame à mort",problème avéré,fixe,réseau,Mistral-7B-Instruct,200,1.91
+6,"Merci Free, tout marche parfaitement !",problème non avéré,aucun,aucun,Mistral-7B-Instruct,200,2.82
+7,"Franchement service client au top, rapide et efficace",problème non avéré,aucun,aucun,Mistral-7B-Instruct,200,2.89
+8,"J’ai eu peur pour rien, c’était mon câble Ethernet mal branché 😅",problème non avéré,aucun,aucun,Mistral-7B-Instruct,200,1.93
+9,"Free c’est la vie, rien à dire 👌",problème non avéré,aucun,aucun,Mistral-7B-Instruct,200,3.93
+10,"Depuis la mise à jour de la box, plus de Wi-Fi",problème avéré,fixe,wifi,Mistral-7B-Instruct,200,2.01
+11,"Je ne reçois plus mes mails Freebox, help",problème avéré,fixe,mail,Mistral-7B-Instruct,200,2.24
+12,"Je veux changer d’offre, comment faire ?",problème non avéré,aucun,aucun,Mistral-7B-Instruct,200,3.57
+13,J’ai été facturé deux fois pour le même mois,problème avéré,fixe,facture,Mistral-7B-Instruct,200,3.14
+14,Free Assistance m’a aidé super vite 👏,problème non avéré,aucun,aucun,Mistral-7B-Instruct,200,3.44
+15,Mon téléphone chauffe quand je passe des appels,problème avéré,mobile,appel voix,Mistral-7B-Instruct,200,1.92
+16,"Bonjour Free, pouvez-vous activer ma ligne svp ?",problème non avéré,aucun,aucun,Mistral-7B-Instruct,200,1.8
+17,"Les voyants de ma Freebox sont tous rouges, aucun signal",problème avéré,fixe,wifi,Mistral-7B-Instruct,200,3.15
+18,Je n’ai pas reçu ma nouvelle carte SIM,problème avéré,mobile,box,Mistral-7B-Instruct,200,1.81
