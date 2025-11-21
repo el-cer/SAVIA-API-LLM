@@ -9,7 +9,7 @@ from transformers import AutoTokenizer
 load_dotenv()
 
 # ============================================================
-# 🔧 Chargement des modèles
+#  Chargement des modèles
 # ============================================================
 
 MODEL_NAME = "dangvantuan/sentence-camembert-large"
@@ -24,7 +24,7 @@ HDBSCAN_PATH = os.path.join(PROJECT_ROOT, "knowledge", "gold", "hdbscan_model.jo
 clusterer = joblib.load(HDBSCAN_PATH)
 
 # ============================================================
-# 🔹 Embeddings utilisateur
+# Embeddings utilisateur
 # ============================================================
 
 def truncate_text(text, max_tokens=MAX_TOKENS):
@@ -38,7 +38,7 @@ def compute_embedding(text: str):
     return embedder.encode([truncate_text(text)], normalize_embeddings=True)[0]
 
 # ============================================================
-# 🔹 Génération de réponse — local (streaming)
+# Génération de réponse — local (streaming)
 # ============================================================
 
 def generate_response_stream(model: Llama, prompt: str, max_tokens: int = 256):
@@ -46,7 +46,7 @@ def generate_response_stream(model: Llama, prompt: str, max_tokens: int = 256):
     Génère un flux de texte depuis le modèle local (llama.cpp)
     """
     try:
-        # 🧠 modèle local en mode streaming
+        #  modèle local en mode streaming
         stream = model.create_completion(
             prompt=prompt,
             max_tokens=max_tokens,
@@ -66,7 +66,7 @@ def generate_response_stream(model: Llama, prompt: str, max_tokens: int = 256):
         yield f"\n[ERREUR STREAM LOCAL] {e}"
 
 # ============================================================
-# 🔹 API Mistral — version streaming persistante
+# API Mistral — version streaming persistante
 # ============================================================
 
 def request_model_api(
@@ -88,19 +88,19 @@ def request_model_api(
 
     client = Mistral(api_key=api_key)
 
-    # 🔹 Contexte système
+    #  Contexte système
     system_prompt = (
         context.strip()
         or "Tu es un agent SAV Free. Tes réponses doivent être claires, concises et empathiques."
     )
 
-    # 🔹 Messages structurés
+    # Messages structurés
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": prompt.strip()},
     ]
 
-    # 🔁 Générateur de texte progressif
+    #  Générateur de texte progressif
     def generator():
         try:
             print("🚀 [MISTRAL] Appel API complet...")
@@ -114,7 +114,7 @@ def request_model_api(
                 top_p=1.0,
             )
 
-            # ✅ Correction ici : accéder à message.content (pas ["content"])
+            #  Correction ici : accéder à message.content (pas ["content"])
             result = response.choices[0].message.content
 
             print("✅ [MISTRAL] Réponse reçue, envoi progressif...")
@@ -135,7 +135,7 @@ def request_model_api(
 
 
 # ============================================================
-# 🔹 Top-K contextes RAG
+# Top-K contextes RAG
 # ============================================================
 
 def get_top_k_contexts(user_embedding: np.ndarray, df_gold, k: int = 3):
@@ -161,7 +161,7 @@ def get_top_k_contexts(user_embedding: np.ndarray, df_gold, k: int = 3):
     return cluster_df.iloc[top_indices]["content_clean"].tolist()
 
 # ============================================================
-# 🔹 Classification simple
+# Classification simple
 # ============================================================
 
 def classify_text(prompt: str, df_gold):
