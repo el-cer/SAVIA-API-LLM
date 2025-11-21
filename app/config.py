@@ -7,7 +7,7 @@ from pathlib import Path
 load_dotenv()
 
 # =======================
-# 📦 Paramètres bruts
+# Paramètres bruts
 # =======================
 MODEL_NAME = os.getenv("MODEL_NAME")                     # ex: models/mistral-7b-instruct-v0.2.Q4_K_M.gguf
 MODEL_FILE = os.getenv("MODEL_FILE")                    # ex: mistral-7b-instruct-v0.2.Q4_K_M.gguf
@@ -17,7 +17,7 @@ PORT = int(os.getenv("PORT", "8000"))
 API_KEY = os.getenv("MISTRAL_API_KEY")
 MODEL_MISTRAL = os.getenv("MODEL_MISTRAL")
 # =======================
-# 📁 Résolution du chemin
+# Résolution du chemin
 # =======================
 base_model_dir = Path(__file__).parent.parent / "models"
 
