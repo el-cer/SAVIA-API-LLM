@@ -96,7 +96,7 @@ class ClassifyRequest(BaseModel):
 def chat_sav(req: PromptRequest):
     start = time.time()
 
-    # 🧠 Cas 1 — LLM local (mistral-7b-instruct)
+    # Cas 1 — LLM local (mistral-7b-instruct)
     if req.model_selected == "Mistral-7B-Instruct":
         user_embedding = embed_text(req.prompt)
         top_contexts = get_top_k_contexts(user_embedding, df_gold, k=3)
@@ -112,7 +112,7 @@ def chat_sav(req: PromptRequest):
         stream = generate_response_stream(model, full_prompt, req.max_tokens)
         return StreamingResponse(stream, media_type="text/plain")
 
-    # ☁️ Cas 2 — API Mistral
+    # Cas 2 — API Mistral
     elif req.model_selected == "Mistral-medium":
         stream = request_model_api(
             prompt=req.prompt,
@@ -136,14 +136,13 @@ def classify(req: ClassifyRequest):
     """
     context = req.context.strip() or CLASSIFICATION_CONTEXT
     full_text = ""
-
-    # 🔹 Modèle local (Llama.cpp)
+    #  Modèle local (Llama.cpp)
     if req.model == "Mistral-7B-Instruct":
         full_prompt = f"{context}\n\nTexte à analyser : {req.prompt}"
         stream = generate_response_stream(model, full_prompt, max_tokens=256)
         full_text = "".join(stream)
 
-    # 🔹 Modèle cloud (Mistral API)
+    #  Modèle cloud (Mistral API)
     elif req.model == "Mistral-medium":
         for word in request_model_api(
             prompt=req.prompt,
